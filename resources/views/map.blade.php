@@ -35,6 +35,13 @@
             max-width: 400px;
         }
         
+        @media (max-width: 480px) {
+            .leaflet-popup-content {
+                min-width: 280px;
+                max-width: 90vw;
+            }
+        }
+        
         .leaflet-popup-content-wrapper {
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -51,9 +58,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
-        .status-active { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .status-inactive { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-        .status-maintenance { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .status-read { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .status-not_read { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .status-season { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
         
         @keyframes slideIn {
             from { transform: translateX(-100%); }
@@ -74,7 +81,7 @@
 <body class="font-sans antialiased bg-gray-100">
 
 <!-- Sidebar -->
-<div class="sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 slide-in">
+<div class="sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 slide-in -translate-x-full lg:translate-x-0">
     <div class="h-full flex flex-col">
         <!-- Header -->
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
@@ -110,23 +117,23 @@
                 <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                     <div class="flex items-center justify-between">
                         <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        <span id="activeCount" class="text-2xl font-bold text-green-700">0</span>
+                        <span id="readCount" class="text-2xl font-bold text-green-700">0</span>
                     </div>
-                    <p class="text-sm text-green-600 mt-1">Active</p>
+                    <p class="text-sm text-green-600 mt-1">Read</p>
                 </div>
                 <div class="bg-red-50 p-4 rounded-lg border border-red-200">
                     <div class="flex items-center justify-between">
                         <i class="fas fa-times-circle text-red-600 text-xl"></i>
-                        <span id="inactiveCount" class="text-2xl font-bold text-red-700">0</span>
+                        <span id="not_readCount" class="text-2xl font-bold text-red-700">0</span>
                     </div>
-                    <p class="text-sm text-red-600 mt-1">Inactive</p>
+                    <p class="text-sm text-red-600 mt-1">Not Read</p>
                 </div>
                 <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
                     <div class="flex items-center justify-between">
                         <i class="fas fa-tools text-amber-600 text-xl"></i>
-                        <span id="maintenanceCount" class="text-2xl font-bold text-amber-700">0</span>
+                        <span id="seasonCount" class="text-2xl font-bold text-amber-700">0</span>
                     </div>
-                    <p class="text-sm text-amber-600 mt-1">Maintenance</p>
+                    <p class="text-sm text-amber-600 mt-1">Season</p>
                 </div>
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <div class="flex items-center justify-between">
@@ -143,24 +150,24 @@
             <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Filters</h3>
             <div class="space-y-3">
                 <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                    <input type="checkbox" id="filterActive" checked class="w-4 h-4 text-green-600 rounded focus:ring-green-500">
+                    <input type="checkbox" id="filterRead" checked class="w-4 h-4 text-green-600 rounded focus:ring-green-500">
                     <span class="flex items-center space-x-2">
                         <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                        <span class="text-sm">Active Boxes</span>
+                        <span class="text-sm">Read Boxes</span>
                     </span>
                 </label>
                 <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                    <input type="checkbox" id="filterInactive" checked class="w-4 h-4 text-red-600 rounded focus:ring-red-500">
+                    <input type="checkbox" id="filterNot_read" checked class="w-4 h-4 text-red-600 rounded focus:ring-red-500">
                     <span class="flex items-center space-x-2">
                         <span class="w-3 h-3 bg-red-500 rounded-full"></span>
-                        <span class="text-sm">Inactive Boxes</span>
+                        <span class="text-sm">Not Read Boxes</span>
                     </span>
                 </label>
                 <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                    <input type="checkbox" id="filterMaintenance" checked class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                    <input type="checkbox" id="filterSeason" checked class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
                     <span class="flex items-center space-x-2">
                         <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
-                        <span class="text-sm">Maintenance</span>
+                        <span class="text-sm">Season Boxes</span>
                     </span>
                 </label>
             </div>
@@ -321,10 +328,10 @@
     // Get status CSS class
     function getStatusClass(status) {
         switch(status?.toLowerCase()) {
-            case 'active': return 'status-active';
-            case 'inactive': return 'status-inactive';
-            case 'maintenance': return 'status-maintenance';
-            default: return 'status-active';
+            case 'read': return 'status-read';
+            case 'not_read': return 'status-not_read';
+            case 'season': return 'status-season';
+            default: return 'status-read';
         }
     }
     
@@ -338,15 +345,15 @@
     // Update statistics
     function updateStatistics() {
         const stats = {
-            active: allBoxes.filter(b => b.status?.toLowerCase() === 'active').length,
-            inactive: allBoxes.filter(b => b.status?.toLowerCase() === 'inactive').length,
-            maintenance: allBoxes.filter(b => b.status?.toLowerCase() === 'maintenance').length,
+            read: allBoxes.filter(b => b.status?.toLowerCase() === 'read').length,
+            not_read: allBoxes.filter(b => b.status?.toLowerCase() === 'not_read').length,
+            season: allBoxes.filter(b => b.status?.toLowerCase() === 'season').length,
             total: allBoxes.length
         };
         
-        document.getElementById('activeCount').textContent = stats.active;
-        document.getElementById('inactiveCount').textContent = stats.inactive;
-        document.getElementById('maintenanceCount').textContent = stats.maintenance;
+        document.getElementById('readCount').textContent = stats.read;
+        document.getElementById('not_readCount').textContent = stats.not_read;
+        document.getElementById('seasonCount').textContent = stats.season;
         document.getElementById('totalCount').textContent = stats.total;
     }
     
@@ -357,17 +364,21 @@
         searchInput.addEventListener('input', handleSearch);
         
         // Filter checkboxes
-        ['filterActive', 'filterInactive', 'filterMaintenance'].forEach(id => {
+        ['filterRead', 'filterNot_read', 'filterSeason'].forEach(id => {
             document.getElementById(id).addEventListener('change', applyFilters);
         });
         
         // Mobile menu toggle
         const mobileToggle = document.getElementById('mobileMenuToggle');
+        const toggleSidebar = document.getElementById('toggleSidebar');
         const sidebar = document.querySelector('.sidebar');
         
-        mobileToggle.addEventListener('click', () => {
+        function toggleSidebarMenu() {
             sidebar.classList.toggle('-translate-x-full');
-        });
+        }
+        
+        mobileToggle.addEventListener('click', toggleSidebarMenu);
+        toggleSidebar.addEventListener('click', toggleSidebarMenu);
     }
     
     // Handle search
@@ -395,16 +406,16 @@
     
     // Apply filters
     function applyFilters() {
-        const activeFilter = document.getElementById('filterActive').checked;
-        const inactiveFilter = document.getElementById('filterInactive').checked;
-        const maintenanceFilter = document.getElementById('filterMaintenance').checked;
+        const readFilter = document.getElementById('filterRead').checked;
+        const not_readFilter = document.getElementById('filterNot_read').checked;
+        const seasonFilter = document.getElementById('filterSeason').checked;
         
         let finalFiltered = filteredBoxes.filter(box => {
             const status = box.status?.toLowerCase();
-            return (status === 'active' && activeFilter) ||
-                   (status === 'inactive' && inactiveFilter) ||
-                   (status === 'maintenance' && maintenanceFilter) ||
-                   (!status && activeFilter);
+            return (status === 'read' && readFilter) ||
+                   (status === 'not_read' && not_readFilter) ||
+                   (status === 'season' && seasonFilter) ||
+                   (!status && readFilter);
         });
         
         // Update markers
