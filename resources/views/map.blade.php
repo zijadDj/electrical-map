@@ -31,7 +31,17 @@
         
         .leaflet-popup-content {
             font-family: 'Inter', sans-serif;
-            min-width: 200px;
+            min-width: 320px;
+            max-width: 400px;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .leaflet-popup-tip {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         
         .custom-marker-icon {
@@ -281,27 +291,27 @@
     function createPopupContent(box) {
         const statusBadge = getStatusBadge(box.status);
         return `
-            <div class="p-4 min-w-[250px]">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-lg text-gray-800">${box.code}</h3>
+            <div class="p-5 min-w-[320px] max-w-[400px]">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-xl text-gray-800">${box.code}</h3>
                     ${statusBadge}
                 </div>
-                <div class="space-y-2 text-sm">
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-map-marker-alt text-gray-400 w-4"></i>
-                        <span class="text-gray-600">Lat: ${box.latitude.toFixed(6)}</span>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-map-marker-alt text-gray-400 w-5"></i>
+                        <span class="text-gray-600">Latitude: ${box.latitude.toFixed(6)}</span>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <i class="fas fa-compass text-gray-400 w-4"></i>
-                        <span class="text-gray-600">Lng: ${box.longitude.toFixed(6)}</span>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-compass text-gray-400 w-5"></i>
+                        <span class="text-gray-600">Longitude: ${box.longitude.toFixed(6)}</span>
                     </div>
                 </div>
-                <div class="mt-4 pt-3 border-t flex space-x-2">
-                    <button onclick="centerOnBox(${box.latitude}, ${box.longitude})" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition">
-                        <i class="fas fa-crosshairs mr-1"></i> Center
+                <div class="mt-5 pt-4 border-t flex space-x-3">
+                    <button onclick="centerOnBox(${box.latitude}, ${box.longitude})" class="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-blue-700 transition font-medium">
+                        <i class="fas fa-crosshairs mr-2"></i> Center
                     </button>
-                    <button onclick="getDirections(${box.latitude}, ${box.longitude})" class="flex-1 bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 transition">
-                        <i class="fas fa-directions mr-1"></i> Directions
+                    <button onclick="getDirections(${box.latitude}, ${box.longitude})" class="flex-1 bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-green-700 transition font-medium">
+                        <i class="fas fa-directions mr-2"></i> Directions
                     </button>
                 </div>
             </div>
