@@ -58,6 +58,11 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
+        .user-location-marker {
+            background: transparent !important;
+            border: none !important;
+        }
+        
         .status-read { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .status-not_read { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
         .status-season { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
@@ -191,6 +196,11 @@
     <i class="fas fa-bars text-gray-700"></i>
 </button>
 
+<!-- User Location Button -->
+<button id="locateUser" class="fixed top-4 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group">
+    <i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>
+</button>
+
 <!-- Map Container -->
 <div id="map"></div>
 
@@ -216,6 +226,8 @@
     let markers = L.markerClusterGroup();
     let allBoxes = [];
     let filteredBoxes = [];
+    let userLocationMarker = null;
+    let userLocationCircle = null;
     
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
@@ -379,6 +391,10 @@
         
         mobileToggle.addEventListener('click', toggleSidebarMenu);
         toggleSidebar.addEventListener('click', toggleSidebarMenu);
+        
+        // User location button
+        const locateUserBtn = document.getElementById('locateUser');
+        locateUserBtn.addEventListener('click', locateUser);
     }
     
     // Handle search
@@ -485,6 +501,166 @@
     // Get directions (opens in Google Maps)
     function getDirections(lat, lng) {
         window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+    }
+    
+    // Locate user on the map
+    function locateUser() {
+        const locateBtn = document.getElementById('locateUser');
+        
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+            showNotification('Geolocation is not supported by your browser', 'error');
+            return;
+        }
+        
+        // Show loading state
+        locateBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-blue-600"></i>';
+        locateBtn.disabled = true;
+        
+        // Get current position
+        navigator.geolocation.getCurrentPosition(
+            // Success callback
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+                
+                // Remove previous user location markers
+                if (userLocationMarker) {
+                    map.removeLayer(userLocationMarker);
+                }
+                if (userLocationCircle) {
+                    map.removeLayer(userLocationCircle);
+                }
+                
+                // Create user location marker
+                const userIcon = L.divIcon({
+                    className: 'user-location-marker',
+                    html: '<div class="relative"><div class="absolute inset-0 bg-blue-500 rounded-full animate-ping"></div><div class="relative bg-blue-600 rounded-full w-4 h-4 border-2 border-white shadow-lg"></div></div>',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                
+                userLocationMarker = L.marker([lat, lng], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="p-3">
+                            <h4 class="font-semibold text-gray-800 mb-2">Your Location</h4>
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Accuracy: ±${accuracy.toFixed(0)}m
+                            </p>
+                        </div>
+                    `);
+                
+                // Add accuracy circle
+                userLocationCircle = L.circle([lat, lng], {
+                    radius: accuracy,
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.1,
+                    color: '#3b82f6',
+                    weight: 2,
+                    opacity: 0.3
+                }).addTo(map);
+                
+                // Center map on user location
+                map.setView([lat, lng], 15);
+                
+                // Open popup
+                userLocationMarker.openPopup();
+                
+                // Reset button
+                locateBtn.innerHTML = '<i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>';
+                locateBtn.disabled = false;
+                
+                showNotification('Location found successfully!', 'success');
+            },
+            // Error callback
+            function(error) {
+                // Reset button
+                locateBtn.innerHTML = '<i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>';
+                locateBtn.disabled = false;
+                
+                // Handle different error types
+                let errorMessage = 'Unable to retrieve your location';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location access denied. Please enable location permissions.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information is unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Location request timed out.';
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        errorMessage = 'An unknown error occurred.';
+                        break;
+                }
+                
+                showNotification(errorMessage, 'error');
+            },
+            // Options
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000 // Accept cached position up to 1 minute old
+            }
+        );
+    }
+    
+    // Show notification message
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotification = document.querySelector('.location-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `location-notification fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+        
+        // Set color based on type
+        switch(type) {
+            case 'success':
+                notification.className += ' bg-green-500 text-white';
+                break;
+            case 'error':
+                notification.className += ' bg-red-500 text-white';
+                break;
+            default:
+                notification.className += ' bg-blue-500 text-white';
+        }
+        
+        notification.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span class="text-sm font-medium">${message}</span>
+            </div>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Slide in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
     }
 </script>
 
