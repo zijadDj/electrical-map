@@ -98,6 +98,33 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        .leaflet-routing-container {
+            position: fixed !important;
+            top: 20px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 3000 !important;
+            max-height: 50vh;
+            max-width: 90vw;
+            width: 400px;
+            overflow-y: auto;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+            border: none !important;
+            margin: 0 !important;
+            font-family: 'Inter', sans-serif !important;
+            background-color: white;
+        }
+
+        /* Hide routing container on very small screens if needed or adjust */
+        @media (max-width: 480px) {
+            .leaflet-routing-container {
+                width: 90vw;
+                max-width: 90vw;
+                top: 10px !important;
+            }
+        }
     </style>
 </head>
 
@@ -227,19 +254,19 @@
 
     <!-- Mobile Menu Toggle -->
     <button id="mobileMenuToggle"
-        class="lg:hidden fixed top-4 left-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+        class="lg:hidden fixed top-24 left-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
         <i class="fas fa-bars text-gray-700"></i>
     </button>
 
     <!-- User Location Button -->
     <button id="locateUser"
-        class="fixed top-4 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group">
+        class="fixed bottom-8 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group">
         <i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>
     </button>
 
     <!-- Clear Route Button -->
     <button id="clearRouteBtn" onclick="clearRoute()"
-        class="fixed top-20 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group hidden text-red-600 hover:text-red-700">
+        class="fixed bottom-24 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group hidden text-red-600 hover:text-red-700">
         <i class="fas fa-times-circle"></i>
         <span class="ml-2 font-medium text-sm">Clear Route</span>
     </button>
@@ -318,6 +345,7 @@
         let userLocationMarker = null;
         let userLocationCircle = null;
         let routingControl = null;
+        let routingObserver = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function () {
@@ -630,6 +658,40 @@
 
             // Show clear button
             document.getElementById('clearRouteBtn').classList.remove('hidden');
+
+            // Handle menu button visibility based on container state
+            const container = routingControl.getContainer();
+            const menuBtn = document.getElementById('mobileMenuToggle');
+
+            // Function to update visibility
+            const updateMenuVisibility = () => {
+                // Check if collapsed (leaflet-routing-machine usually adds 'leaflet-routing-collapsed' class)
+                // Or check if height is small (less than 100px)
+                const isCollapsed = container.classList.contains('leaflet-routing-collapsed') || container.offsetHeight < 60;
+
+                if (isCollapsed) {
+                    menuBtn.classList.remove('hidden');
+                } else {
+                    menuBtn.classList.add('hidden');
+                }
+            };
+
+            // Initial check
+            updateMenuVisibility();
+
+            // Observe changes
+            if (routingObserver) {
+                routingObserver.disconnect();
+            }
+
+            routingObserver = new MutationObserver(updateMenuVisibility);
+            routingObserver.observe(container, {
+                attributes: true,
+                attributeFilter: ['class', 'style']
+            });
+
+            // Also listen for transition end just in case
+            container.addEventListener('transitionend', updateMenuVisibility);
         }
 
         // Clear current route
@@ -638,7 +700,14 @@
                 map.removeControl(routingControl);
                 routingControl = null;
             }
+
+            if (routingObserver) {
+                routingObserver.disconnect();
+                routingObserver = null;
+            }
+
             document.getElementById('clearRouteBtn').classList.add('hidden');
+            document.getElementById('mobileMenuToggle').classList.remove('hidden');
         }
 
         // Locate user on the map
