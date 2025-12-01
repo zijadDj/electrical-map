@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -234,6 +237,13 @@
         <i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>
     </button>
 
+    <!-- Clear Route Button -->
+    <button id="clearRouteBtn" onclick="clearRoute()"
+        class="fixed top-20 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group hidden text-red-600 hover:text-red-700">
+        <i class="fas fa-times-circle"></i>
+        <span class="ml-2 font-medium text-sm">Clear Route</span>
+    </button>
+
     <!-- Map Container -->
     <div id="map"></div>
 
@@ -296,6 +306,9 @@
     <!-- MarkerCluster JS -->
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
+    <!-- Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
     <script>
         // Global variables
         let map;
@@ -304,6 +317,7 @@
         let filteredBoxes = [];
         let userLocationMarker = null;
         let userLocationCircle = null;
+        let routingControl = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function () {
@@ -574,9 +588,57 @@
             });
         }
 
-        // Get directions (opens in Google Maps)
-        function getDirections(lat, lng) {
-            window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+        // Get directions (in-app routing)
+        function getDirections(destLat, destLng) {
+            // Check if we have user location
+            if (!userLocationMarker) {
+                showNotification('Please locate yourself first', 'info');
+                locateUser();
+                // Wait for location to be found (simple approach: retry after a delay or let user click again)
+                // For better UX, we could pass a callback to locateUser, but for now we'll just prompt.
+                return;
+            }
+
+            const userLat = userLocationMarker.getLatLng().lat;
+            const userLng = userLocationMarker.getLatLng().lng;
+
+            calculateRoute(userLat, userLng, destLat, destLng);
+
+            // Close popup to see the route better
+            map.closePopup();
+        }
+
+        // Calculate and display route
+        function calculateRoute(startLat, startLng, endLat, endLng) {
+            // Clear existing route
+            clearRoute();
+
+            // Create new route
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(startLat, startLng),
+                    L.latLng(endLat, endLng)
+                ],
+                routeWhileDragging: false,
+                showAlternatives: false,
+                fitSelectedRoutes: true,
+                lineOptions: {
+                    styles: [{ color: '#3b82f6', opacity: 0.7, weight: 5 }]
+                },
+                createMarker: function () { return null; } // Don't create default markers
+            }).addTo(map);
+
+            // Show clear button
+            document.getElementById('clearRouteBtn').classList.remove('hidden');
+        }
+
+        // Clear current route
+        function clearRoute() {
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            document.getElementById('clearRouteBtn').classList.add('hidden');
         }
 
         // Locate user on the map
