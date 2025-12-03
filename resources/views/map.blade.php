@@ -433,6 +433,16 @@
                     ${statusBadge}
                 </div>
                 <div class="space-y-3 text-sm">
+                    ${box.nameOfConsumer ? `
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user text-gray-400 w-5"></i>
+                        <span class="text-gray-600">${box.nameOfConsumer}</span>
+                    </div>` : ''}
+                    ${box.numberOfConsumer ? `
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-hashtag text-gray-400 w-5"></i>
+                        <span class="text-gray-600">Number of Consumer: ${box.numberOfConsumer}</span>
+                    </div>` : ''}
                     <div class="flex items-center space-x-3">
                         <i class="fas fa-map-marker-alt text-gray-400 w-5"></i>
                         <span class="text-gray-600">Latitude: ${box.latitude.toFixed(6)}</span>

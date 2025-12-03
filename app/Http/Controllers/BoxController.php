@@ -10,7 +10,7 @@ class BoxController extends Controller
     // Return all boxes as JSON
     public function index()
     {
-        $boxes = Box::all(['id', 'code', 'latitude', 'longitude', 'status']);
+        $boxes = Box::all(['id', 'code', 'latitude', 'longitude', 'status', 'nameOfConsumer', 'numberOfConsumer']);
 
         return response()->json($boxes);
     }
