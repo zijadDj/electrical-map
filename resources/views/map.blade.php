@@ -345,7 +345,6 @@
         let userLocationMarker = null;
         let userLocationCircle = null;
         let routingControl = null;
-        let routingObserver = null;
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function () {
@@ -656,42 +655,9 @@
                 createMarker: function () { return null; } // Don't create default markers
             }).addTo(map);
 
-            // Show clear button
+            // Show clear button and hide menu button
             document.getElementById('clearRouteBtn').classList.remove('hidden');
-
-            // Handle menu button visibility based on container state
-            const container = routingControl.getContainer();
-            const menuBtn = document.getElementById('mobileMenuToggle');
-
-            // Function to update visibility
-            const updateMenuVisibility = () => {
-                // Check if collapsed (leaflet-routing-machine usually adds 'leaflet-routing-collapsed' class)
-                // Or check if height is small (less than 100px)
-                const isCollapsed = container.classList.contains('leaflet-routing-collapsed') || container.offsetHeight < 60;
-
-                if (isCollapsed) {
-                    menuBtn.classList.remove('hidden');
-                } else {
-                    menuBtn.classList.add('hidden');
-                }
-            };
-
-            // Initial check
-            updateMenuVisibility();
-
-            // Observe changes
-            if (routingObserver) {
-                routingObserver.disconnect();
-            }
-
-            routingObserver = new MutationObserver(updateMenuVisibility);
-            routingObserver.observe(container, {
-                attributes: true,
-                attributeFilter: ['class', 'style']
-            });
-
-            // Also listen for transition end just in case
-            container.addEventListener('transitionend', updateMenuVisibility);
+            document.getElementById('mobileMenuToggle').classList.add('hidden');
         }
 
         // Clear current route
@@ -700,12 +666,6 @@
                 map.removeControl(routingControl);
                 routingControl = null;
             }
-
-            if (routingObserver) {
-                routingObserver.disconnect();
-                routingObserver = null;
-            }
-
             document.getElementById('clearRouteBtn').classList.add('hidden');
             document.getElementById('mobileMenuToggle').classList.remove('hidden');
         }
