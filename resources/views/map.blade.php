@@ -149,11 +149,18 @@
             </div>
 
             <!-- Search Section -->
-            <div class="p-6 border-b">
-                <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Search electrical boxes..."
-                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <div class="p-6 border-b space-y-3">
+                <div class="flex space-x-2 items-stretch">
+                    <div class="relative flex-1">
+                        <input type="text" id="searchInput" placeholder="Search..."
+                            class="w-full h-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <select id="searchType" class="w-36 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                        <option value="code">Box Code</option>
+                        <option value="name">Consumer Name</option>
+                        <option value="number">Consumer Number</option>
+                    </select>
                 </div>
             </div>
 
@@ -526,7 +533,8 @@
 
         // Handle search
         function handleSearch(e) {
-            const searchTerm = e.target.value.toLowerCase();
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const searchType = document.getElementById('searchType').value;
 
             if (searchTerm === '') {
                 filteredBoxes = [...allBoxes];
@@ -534,15 +542,23 @@
                 <div class="text-gray-500 text-sm text-center py-8">
                     <i class="fas fa-search text-4xl mb-3 block opacity-30"></i>
                     Start searching to see results
-                </div>
-            `;
-            } else {
-                filteredBoxes = allBoxes.filter(box =>
-                    box.code?.toLowerCase().includes(searchTerm) ||
-                    box.status?.toLowerCase().includes(searchTerm)
-                );
-                updateResultsList(filteredBoxes);
+                </div>`;
+                return;
             }
+
+            filteredBoxes = allBoxes.filter(box => {
+                switch(searchType) {
+                    case 'name':
+                        return box.nameOfConsumer?.toLowerCase().includes(searchTerm);
+                    case 'number':
+                        return box.numberOfConsumer?.toString().includes(searchTerm);
+                    case 'code':
+                    default:
+                        return box.code?.toLowerCase().includes(searchTerm);
+                }
+            });
+            
+            updateResultsList(filteredBoxes);
 
             applyFilters();
         }
@@ -587,29 +603,49 @@
         // Update results list
         function updateResultsList(boxes) {
             const resultsList = document.getElementById('resultsList');
+            const searchType = document.getElementById('searchType').value;
 
             if (boxes.length === 0) {
                 resultsList.innerHTML = `
                 <div class="text-gray-500 text-sm text-center py-8">
                     <i class="fas fa-inbox text-4xl mb-3 block opacity-30"></i>
                     No results found
-                </div>
-            `;
+                </div>`;
                 return;
             }
 
-            resultsList.innerHTML = boxes.slice(0, 10).map(box => `
-            <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="centerOnBox(${box.latitude}, ${box.longitude})">
-                <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-semibold text-gray-800">${box.code}</h4>
-                    ${getStatusBadge(box.status)}
-                </div>
-                <div class="text-xs text-gray-500">
-                    <i class="fas fa-map-marker-alt mr-1"></i>
-                    ${box.latitude.toFixed(4)}, ${box.longitude.toFixed(4)}
-                </div>
-            </div>
-        `).join('');
+            resultsList.innerHTML = boxes.slice(0, 10).map(box => {
+                let title, subtitle = '';
+                
+                switch(searchType) {
+                    case 'name':
+                        title = box.nameOfConsumer || 'No name';
+                        subtitle = `Box: ${box.code}`;
+                        break;
+                    case 'number':
+                        title = `Consumer #${box.numberOfConsumer || 'N/A'}`;
+                        subtitle = `Box: ${box.code}${box.nameOfConsumer ? ` • ${box.nameOfConsumer}` : ''}`;
+                        break;
+                    case 'code':
+                    default:
+                        title = box.code;
+                        subtitle = box.nameOfConsumer || '';
+                }
+
+                return `
+                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                     onclick="centerOnBox(${box.latitude}, ${box.longitude})">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-semibold text-gray-800 truncate">${title}</h4>
+                        ${getStatusBadge(box.status)}
+                    </div>
+                    ${subtitle ? `<div class="text-sm text-gray-600 mb-1 truncate">${subtitle}</div>` : ''}
+                    <div class="text-xs text-gray-500 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        ${box.latitude.toFixed(4)}, ${box.longitude.toFixed(4)}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         // Center map on specific box
