@@ -369,9 +369,11 @@
             map = L.map('map').setView([42.5, 19.3], 12);
 
             // Add OpenStreetMap tiles with better styling
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
+            L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiemlqYWQtZGoiLCJhIjoiY21rbWljeXdwMGRodDNkcGhycXZuNmwzcyJ9.vjU3Deyw3qOPG0Wg_RM7bQ', {
+                tileSize: 512,
+                zoomOffset: -1,
+                attribution: '© <a href="https://www.mapbox.com/">Mapbox</a> © OpenStreetMap',
+                maxZoom: 22
             }).addTo(map);
 
             // Add the marker cluster group to the map
