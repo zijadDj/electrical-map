@@ -346,7 +346,11 @@
     <script>
         // Global variables
         let map;
-        let markers = L.markerClusterGroup();
+        let markers = L.markerClusterGroup({
+            maxClusterRadius: 80,
+            disableClusteringAtZoom: 17,
+            spiderfyOnMaxZoom: true
+        });
         let allBoxes = [];
         let filteredBoxes = [];
         let userLocationMarker = null;
@@ -557,7 +561,7 @@
                         return box.code?.toLowerCase().includes(searchTerm);
                 }
             });
-            
+
             updateResultsList(filteredBoxes);
 
             applyFilters();
@@ -616,7 +620,7 @@
 
             resultsList.innerHTML = boxes.slice(0, 10).map(box => {
                 let title, subtitle = '';
-                
+
                 switch(searchType) {
                     case 'name':
                         title = box.nameOfConsumer || 'No name';
@@ -633,7 +637,7 @@
                 }
 
                 return `
-                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" 
+                <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                      onclick="centerOnBox(${box.latitude}, ${box.longitude})">
                     <div class="flex items-center justify-between mb-1">
                         <h4 class="font-semibold text-gray-800 truncate">${title}</h4>
