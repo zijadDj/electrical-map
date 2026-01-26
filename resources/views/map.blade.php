@@ -407,6 +407,103 @@
         </div>
     @endauth
 
+    <!-- Edit Box Modal -->
+    @auth
+        <div id="editBoxModal"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden items-center justify-center">
+            <div
+                class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all scale-100">
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white relative">
+                    <button onclick="closeEditBoxModal()"
+                        class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+                            <i class="fas fa-edit text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">Edit Box</h2>
+                            <p class="text-green-100">Update box details</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="editBoxForm" onsubmit="handleBoxUpdate(event)" class="p-6 space-y-4">
+                    <input type="hidden" id="editBoxId">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Code -->
+                        <div class="space-y-1">
+                            <label for="editBoxCode" class="text-sm font-medium text-gray-700">Box Code *</label>
+                            <input type="text" id="editBoxCode" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                                placeholder="e.g. B-001">
+                        </div>
+
+                        <!-- Status -->
+                        <div class="space-y-1">
+                            <label for="editBoxStatus" class="text-sm font-medium text-gray-700">Status</label>
+                            <select id="editBoxStatus"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                                <option value="not_read">Not Read</option>
+                                <option value="read">Read</option>
+                                <option value="season">Season</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Latitude -->
+                        <div class="space-y-1">
+                            <label for="editBoxLat" class="text-sm font-medium text-gray-700">Latitude *</label>
+                            <input type="number" id="editBoxLat" step="any" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                                placeholder="42.xxx">
+                        </div>
+
+                        <!-- Longitude -->
+                        <div class="space-y-1">
+                            <label for="editBoxLng" class="text-sm font-medium text-gray-700">Longitude *</label>
+                            <input type="number" id="editBoxLng" step="any" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                                placeholder="19.xxx">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Consumer Name -->
+                        <div class="space-y-1">
+                            <label for="editBoxConsumerName" class="text-sm font-medium text-gray-700">Consumer Name</label>
+                            <input type="text" id="editBoxConsumerName"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                                placeholder="John Doe">
+                        </div>
+
+                        <!-- Consumer Number -->
+                        <div class="space-y-1">
+                            <label for="editBoxConsumerNumber" class="text-sm font-medium text-gray-700">Consumer
+                                Number</label>
+                            <input type="text" id="editBoxConsumerNumber"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                                placeholder="123456">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 pt-4 border-t">
+                        <button type="button" onclick="closeEditBoxModal()"
+                            class="flex-1 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-green-700 transition font-medium">
+                            <i class="fas fa-save mr-2"></i> Update Box
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endauth
+
     <!-- Add Box Modal -->
     @auth
         <div id="addBoxModal"
@@ -643,6 +740,13 @@
                         <i class="fas fa-directions mr-2"></i> Directions
                     </button>
                 </div>
+                @auth
+                    <div class="mt-3">
+                         <button onclick="openEditBoxModal(${JSON.stringify(box).replace(/"/g, '&quot;')})" class="w-full bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
+                            <i class="fas fa-edit mr-2"></i> Edit Box
+                        </button>
+                    </div>
+                @endauth
             </div>
         `;
         }
@@ -1223,6 +1327,88 @@
 
 
 
+
+        // Edit Box Modal Functions
+        const editBoxModal = document.getElementById('editBoxModal');
+
+        function openEditBoxModal(box) {
+            if (editBoxModal) {
+                // Populate form fields
+                document.getElementById('editBoxId').value = box.id;
+                document.getElementById('editBoxCode').value = box.code;
+                document.getElementById('editBoxLat').value = box.latitude;
+                document.getElementById('editBoxLng').value = box.longitude;
+                document.getElementById('editBoxConsumerName').value = box.nameOfConsumer || '';
+                document.getElementById('editBoxConsumerNumber').value = box.numberOfConsumer || '';
+                document.getElementById('editBoxStatus').value = box.status?.toLowerCase() || 'not_read';
+
+                editBoxModal.classList.remove('hidden');
+                editBoxModal.classList.add('flex');
+            }
+        }
+
+        function closeEditBoxModal() {
+            if (editBoxModal) {
+                editBoxModal.classList.add('hidden');
+                editBoxModal.classList.remove('flex');
+                document.getElementById('editBoxForm').reset();
+            }
+        }
+
+        // Close Edit Box modal when clicking outside
+        editBoxModal?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeEditBoxModal();
+            }
+        });
+
+        async function handleBoxUpdate(event) {
+            event.preventDefault();
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Updating...';
+
+            const boxId = document.getElementById('editBoxId').value;
+            const formData = {
+                code: document.getElementById('editBoxCode').value,
+                latitude: document.getElementById('editBoxLat').value,
+                longitude: document.getElementById('editBoxLng').value,
+                nameOfConsumer: document.getElementById('editBoxConsumerName').value || null,
+                numberOfConsumer: document.getElementById('editBoxConsumerNumber').value || null,
+                status: document.getElementById('editBoxStatus').value
+            };
+
+            try {
+                const response = await fetch(`/api/boxes/${boxId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('Box updated successfully!', 'success');
+                    closeEditBoxModal();
+                    await fetchBoxes(); // Refresh markers
+                } else {
+                    const errorMessage = data.message || 'Failed to update box';
+                    showNotification(errorMessage, 'error');
+                    console.error('Server Error:', data);
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                showNotification('Network error occurred', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
+        }
     </script>
 
 </body>

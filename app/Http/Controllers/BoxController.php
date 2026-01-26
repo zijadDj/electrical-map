@@ -27,7 +27,25 @@ class BoxController extends Controller
         ]);
 
         $box = Box::create($validated);
-        
+
         return response()->json($box, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $box = Box::findOrFail($id);
+
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:boxes,code,' . $id,
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'nameOfConsumer' => 'nullable|string|max:255',
+            'numberOfConsumer' => 'nullable|string|max:255',
+            'status' => 'required|in:read,not_read,season',
+        ]);
+
+        $box->update($validated);
+
+        return response()->json($box);
     }
 }
