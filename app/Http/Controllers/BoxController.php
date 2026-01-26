@@ -48,4 +48,12 @@ class BoxController extends Controller
 
         return response()->json($box);
     }
+
+    public function destroy($id)
+    {
+        $box = Box::findOrFail($id);
+        $box->delete();
+
+        return response()->json(null, 204);
+    }
 }

@@ -8,3 +8,4 @@ Route::get('/boxes', [BoxController::class, 'index']);
 Route::get('/boxes', [BoxController::class, 'index']);
 Route::post('/boxes', [BoxController::class, 'store']);
 Route::put('/boxes/{id}', [BoxController::class, 'update']);
+Route::delete('/boxes/{id}', [BoxController::class, 'destroy']);

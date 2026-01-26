@@ -741,9 +741,12 @@
                     </button>
                 </div>
                 @auth
-                    <div class="mt-3">
-                         <button onclick="openEditBoxModal(${JSON.stringify(box).replace(/"/g, '&quot;')})" class="w-full bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
-                            <i class="fas fa-edit mr-2"></i> Edit Box
+                    <div class="mt-3 flex space-x-3">
+                         <button onclick="openEditBoxModal(${JSON.stringify(box).replace(/"/g, '&quot;')})" class="flex-1 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
+                            <i class="fas fa-edit mr-2"></i> Edit
+                        </button>
+                        <button onclick="deleteBox(${box.id})" class="flex-1 bg-red-50 text-red-600 px-4 py-2.5 rounded-lg text-sm hover:bg-red-100 transition font-medium">
+                            <i class="fas fa-trash-alt mr-2"></i> Delete
                         </button>
                     </div>
                 @endauth
@@ -1407,6 +1410,35 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnContent;
+            }
+        }
+
+        // Delete Box
+        async function deleteBox(id) {
+            if (!confirm('Are you sure you want to delete this box? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/boxes/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification('Box deleted successfully!', 'success');
+                    map.closePopup();
+                    await fetchBoxes(); // Refresh markers
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    const errorMessage = data.message || 'Failed to delete box';
+                    showNotification(errorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                showNotification('Network error occurred', 'error');
             }
         }
     </script>
