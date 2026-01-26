@@ -125,6 +125,69 @@
                 top: 10px !important;
             }
         }
+
+        @media (max-width: 1023px) {
+
+            /* Make search results larger on mobile */
+            #resultsList>div {
+                padding: 1rem !important;
+                margin-bottom: 0.75rem !important;
+            }
+
+            #resultsList h4 {
+                font-size: 1.1rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            #resultsList .text-sm {
+                font-size: 1rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            #resultsList .text-xs {
+                font-size: 0.9rem !important;
+            }
+
+            /* Make the status badge larger */
+            #resultsList .px-2 {
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+                padding-top: 0.25rem !important;
+                padding-bottom: 0.25rem !important;
+                font-size: 0.9rem !important;
+            }
+
+            /* Ensure the search input is large enough for touch */
+            #searchInput {
+                height: 3rem !important;
+                font-size: 1.1rem !important;
+                padding-left: 3rem !important;
+            }
+
+            .fa-search {
+                left: 1rem !important;
+                font-size: 1.2rem !important;
+            }
+
+            /* Make the search type dropdown larger */
+            #searchType {
+                height: 3rem !important;
+                font-size: 1rem !important;
+                padding-left: 0.75rem !important;
+            }
+        }
+
+
+
+        #addBoxForm input[type="number"]::-webkit-inner-spin-button,
+        #addBoxForm input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #addBoxForm input[type="number"] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 
@@ -134,124 +197,126 @@
     <div
         class="sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 slide-in -translate-x-full lg:translate-x-0">
         <div class="h-full flex flex-col">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-bolt text-2xl"></i>
-                        <h1 class="text-xl font-bold">Electrical Map</h1>
+            <!-- Header - Made more compact -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 lg:p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-bolt text-xl lg:text-2xl"></i>
+                        <h1 class="text-lg lg:text-xl font-bold">Electrical Map</h1>
                     </div>
-                    <button id="toggleSidebar" class="lg:hidden hover:bg-white/20 p-2 rounded-lg transition">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button id="toggleSidebar" class="lg:hidden hover:bg-white/20 p-1 rounded transition">
+                            <i class="fas fa-bars text-white"></i>
+                        </button>
+                    </div>
                 </div>
-                <p class="text-sm opacity-90">Infrastructure Management System</p>
             </div>
 
-            <!-- Search Section -->
-            <div class="p-6 border-b space-y-3">
+            <!-- Search Section - Made more compact -->
+            <div class="p-3 lg:p-4 border-b">
                 <div class="flex space-x-2 items-stretch">
                     <div class="relative flex-1">
                         <input type="text" id="searchInput" placeholder="Search..."
-                            class="w-full h-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-base">
+                            class="w-full h-10 lg:h-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-sm">
                         <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
-                    <select id="searchType" class="w-36 border border-gray-300 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                    <select id="searchType"
+                        class="w-28 lg:w-36 border border-gray-300 rounded-lg px-2 py-1 lg:py-2 text-xs lg:text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
                         <option value="code">Box Code</option>
                         <option value="name">Consumer Name</option>
-                        <option value="number">Consumer Number</option>
+                        <option value="number">Consumer #</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Statistics -->
-            <div class="p-6 border-b">
-                <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Statistics</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+            <!-- Statistics - Made more compact -->
+            <div class="p-3 lg:p-4 border-b">
+                <h3 class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Stats</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-green-50 p-2 rounded-lg border border-green-200">
                         <div class="flex items-center justify-between">
-                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                            <span id="readCount" class="text-2xl font-bold text-green-700">0</span>
+                            <i class="fas fa-check-circle text-green-600 text-sm"></i>
+                            <span id="readCount" class="text-lg font-bold text-green-700">0</span>
                         </div>
-                        <p class="text-sm text-green-600 mt-1">Read</p>
+                        <p class="text-xs text-green-600">Read</p>
                     </div>
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <div class="bg-red-50 p-2 rounded-lg border border-red-200">
                         <div class="flex items-center justify-between">
-                            <i class="fas fa-times-circle text-red-600 text-xl"></i>
-                            <span id="not_readCount" class="text-2xl font-bold text-red-700">0</span>
+                            <i class="fas fa-times-circle text-red-600 text-sm"></i>
+                            <span id="not_readCount" class="text-lg font-bold text-red-700">0</span>
                         </div>
-                        <p class="text-sm text-red-600 mt-1">Not Read</p>
+                        <p class="text-xs text-red-600">Not Read</p>
                     </div>
-                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                    <div class="bg-amber-50 p-2 rounded-lg border border-amber-200">
                         <div class="flex items-center justify-between">
-                            <i class="fas fa-tools text-amber-600 text-xl"></i>
-                            <span id="seasonCount" class="text-2xl font-bold text-amber-700">0</span>
+                            <i class="fas fa-tools text-amber-600 text-sm"></i>
+                            <span id="seasonCount" class="text-lg font-bold text-amber-700">0</span>
                         </div>
-                        <p class="text-sm text-amber-600 mt-1">Season</p>
+                        <p class="text-xs text-amber-600">Season</p>
                     </div>
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div class="bg-blue-50 p-2 rounded-lg border border-blue-200">
                         <div class="flex items-center justify-between">
-                            <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
-                            <span id="totalCount" class="text-2xl font-bold text-blue-700">0</span>
+                            <i class="fas fa-map-marker-alt text-blue-600 text-sm"></i>
+                            <span id="totalCount" class="text-lg font-bold text-blue-700">0</span>
                         </div>
-                        <p class="text-sm text-blue-600 mt-1">Total</p>
+                        <p class="text-xs text-blue-600">Total</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Filters -->
-            <div class="p-6 border-b">
-                <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Filters</h3>
-                <div class="space-y-3">
-                    <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+            <!-- Filters - Made more compact -->
+            <div class="p-3 lg:p-4 border-b">
+                <h3 class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Filters</h3>
+                <div class="space-y-1">
+                    <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded text-sm">
                         <input type="checkbox" id="filterRead" checked
-                            class="w-4 h-4 text-green-600 rounded focus:ring-green-500">
-                        <span class="flex items-center space-x-2">
-                            <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                            <span class="text-sm">Read Boxes</span>
+                            class="w-3.5 h-3.5 text-green-600 rounded focus:ring-green-500">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                            <span>Read</span>
                         </span>
                     </label>
-                    <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                    <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded text-sm">
                         <input type="checkbox" id="filterNot_read" checked
-                            class="w-4 h-4 text-red-600 rounded focus:ring-red-500">
-                        <span class="flex items-center space-x-2">
-                            <span class="w-3 h-3 bg-red-500 rounded-full"></span>
-                            <span class="text-sm">Not Read Boxes</span>
+                            class="w-3.5 h-3.5 text-red-600 rounded focus:ring-red-500">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                            <span>Not Read</span>
                         </span>
                     </label>
-                    <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                    <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded text-sm">
                         <input type="checkbox" id="filterSeason" checked
-                            class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
-                        <span class="flex items-center space-x-2">
-                            <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
-                            <span class="text-sm">Season Boxes</span>
+                            class="w-3.5 h-3.5 text-amber-600 rounded focus:ring-amber-500">
+                        <span class="flex items-center space-x-1">
+                            <span class="w-2.5 h-2.5 bg-amber-500 rounded-full"></span>
+                            <span>Season</span>
                         </span>
                     </label>
                 </div>
             </div>
 
-            <!-- Results List -->
-            <div class="flex-1 overflow-y-auto p-6">
-                <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Search Results</h3>
-                <div id="resultsList" class="space-y-3">
-                    <div class="text-gray-500 text-sm text-center py-8">
-                        <i class="fas fa-search text-4xl mb-3 block opacity-30"></i>
-                        Start searching to see results
+            <!-- Results List - Takes remaining space -->
+            <div class="flex-1 overflow-y-auto p-3 lg:p-4">
+                <h3 class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Results</h3>
+                <div id="resultsList" class="space-y-2">
+                    <div class="text-gray-500 text-sm text-center py-4">
+                        <i class="fas fa-search text-3xl mb-2 block opacity-30"></i>
+                        <div class="text-sm">Search for boxes</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar Profile Section -->
-            <div class="p-4 border-t bg-gray-50">
+            <!-- Profile Section - Made more compact -->
+            <div class="p-2 border-t bg-gray-50">
                 @auth
                     <button onclick="openProfileModal()"
-                        class="w-full flex items-center justify-center space-x-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm">
+                        class="w-full flex items-center justify-center space-x-2 bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition text-sm">
                         <i class="fas fa-user-circle text-blue-600"></i>
-                        <span>My Profile</span>
+                        <span>Profile</span>
                     </button>
                 @else
                     <a href="{{ route('login') }}"
-                        class="block w-full text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                        class="block w-full text-center bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition text-sm">
                         Sign In
                     </a>
                 @endauth
@@ -270,6 +335,14 @@
         class="fixed bottom-8 right-4 z-50 bg-white p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow group">
         <i class="fas fa-crosshairs text-blue-600 group-hover:text-blue-700"></i>
     </button>
+
+    @auth
+        <!-- Add Box Button -->
+        <button onclick="openAddBoxModal()"
+            class="fixed top-24 right-4 z-50 bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-blue-700 transition-all hover:scale-110 active:scale-95 group">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
+    @endauth
 
     <!-- Clear Route Button -->
     <button id="clearRouteBtn" onclick="clearRoute()"
@@ -333,6 +406,103 @@
             </div>
         </div>
     @endauth
+
+    <!-- Add Box Modal -->
+    @auth
+        <div id="addBoxModal"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2000] hidden items-center justify-center">
+            <div
+                class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all scale-100">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white relative">
+                    <button onclick="closeAddBoxModal()"
+                        class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+                            <i class="fas fa-cube text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">Add New Box</h2>
+                            <p class="text-blue-100">Enter box details below</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="addBoxForm" onsubmit="handleBoxSubmit(event)" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Code -->
+                        <div class="space-y-1">
+                            <label for="boxCode" class="text-sm font-medium text-gray-700">Box Code *</label>
+                            <input type="text" id="boxCode" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                placeholder="e.g. B-001">
+                        </div>
+
+                        <!-- Status -->
+                        <div class="space-y-1">
+                            <label for="boxStatus" class="text-sm font-medium text-gray-700">Status</label>
+                            <select id="boxStatus"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+                                <option value="not_read" selected>Not Read</option>
+                                <option value="read">Read</option>
+                                <option value="season">Season</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Latitude -->
+                        <div class="space-y-1">
+                            <label for="boxLat" class="text-sm font-medium text-gray-700">Latitude *</label>
+                            <input type="number" id="boxLat" step="any" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                placeholder="42.xxx">
+                        </div>
+
+                        <!-- Longitude -->
+                        <div class="space-y-1">
+                            <label for="boxLng" class="text-sm font-medium text-gray-700">Longitude *</label>
+                            <input type="number" id="boxLng" step="any" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                placeholder="19.xxx">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Consumer Name -->
+                        <div class="space-y-1">
+                            <label for="boxConsumerName" class="text-sm font-medium text-gray-700">Consumer Name</label>
+                            <input type="text" id="boxConsumerName"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                placeholder="John Doe">
+                        </div>
+
+                        <!-- Consumer Number -->
+                        <div class="space-y-1">
+                            <label for="boxConsumerNumber" class="text-sm font-medium text-gray-700">Consumer Number</label>
+                            <input type="text" id="boxConsumerNumber"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                                placeholder="123456">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 pt-4 border-t">
+                        <button type="button" onclick="useCurrentLocation()"
+                            class="flex-1 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-lg text-sm hover:bg-gray-200 transition font-medium">
+                            <i class="fas fa-location-arrow mr-2"></i> Use My Location
+                        </button>
+                        <button type="submit"
+                            class="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-blue-700 transition font-medium">
+                            <i class="fas fa-save mr-2"></i> Save Box
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endauth
+
+
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -543,17 +713,19 @@
             const searchType = document.getElementById('searchType').value;
 
             if (searchTerm === '') {
+                // Show all markers when search is cleared
                 filteredBoxes = [...allBoxes];
-                document.getElementById('resultsList').innerHTML = `
-                <div class="text-gray-500 text-sm text-center py-8">
-                    <i class="fas fa-search text-4xl mb-3 block opacity-30"></i>
-                    Start searching to see results
-                </div>`;
+                updateResultsList(filteredBoxes);
+
+                // Clear all markers and re-add them to show all
+                markers.clearLayers();
+                addMarkersToMap();
                 return;
             }
 
+            // Rest of your existing search logic
             filteredBoxes = allBoxes.filter(box => {
-                switch(searchType) {
+                switch (searchType) {
                     case 'name':
                         return box.nameOfConsumer?.toLowerCase().includes(searchTerm);
                     case 'number':
@@ -565,7 +737,6 @@
             });
 
             updateResultsList(filteredBoxes);
-
             applyFilters();
         }
 
@@ -623,7 +794,7 @@
             resultsList.innerHTML = boxes.slice(0, 10).map(box => {
                 let title, subtitle = '';
 
-                switch(searchType) {
+                switch (searchType) {
                     case 'name':
                         title = box.nameOfConsumer || 'No name';
                         subtitle = `Box: ${box.code}`;
@@ -656,16 +827,66 @@
 
         // Center map on specific box
         function centerOnBox(lat, lng) {
-            map.setView([lat, lng], 16);
+            const sidebar = document.querySelector('.sidebar');
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full');
+            }
 
-            // Open the popup for this marker
+            const targetLatLng = L.latLng(lat, lng);
+
+            // Close any existing popup first
+            map.closePopup();
+
+            // First, find the exact marker and store its reference
+            let targetMarker = null;
+            let closestDistance = Infinity;
+
             markers.eachLayer(layer => {
                 const pos = layer.getLatLng();
-                if (Math.abs(pos.lat - lat) < 0.0001 && Math.abs(pos.lng - lng) < 0.0001) {
-                    layer.openPopup();
+                const distance = targetLatLng.distanceTo(pos);
+
+                // Find the closest marker within a reasonable distance (10 meters)
+                if (distance < 10 && distance < closestDistance) {
+                    closestDistance = distance;
+                    targetMarker = layer;
+                }
+            });
+
+            if (!targetMarker) {
+                console.log('No marker found at the given coordinates');
+                return;
+            }
+
+            // Store the original popup content
+            const popupContent = targetMarker.getPopup()?.getContent() || createPopupContent(targetMarker.options.boxData);
+
+            // Create a new popup with the same content
+            const popup = L.popup()
+                .setLatLng(targetLatLng)
+                .setContent(popupContent);
+
+            // Fly to the location
+            map.flyTo(targetLatLng, 18, {
+                duration: 1,
+                easeLinearity: 0.25,
+                onEnd: function () {
+                    // Small delay to ensure the map has settled
+                    setTimeout(() => {
+                        // Open the popup directly
+                        popup.openOn(map);
+
+                        // Force a small pan to ensure the popup is fully visible
+                        setTimeout(() => {
+                            map.panBy([0, -50], {
+                                duration: 0.3,
+                                easeLinearity: 0.25
+                            });
+                        }, 100);
+                    }, 100);
                 }
             });
         }
+
 
         // Get directions (in-app routing)
         function getDirections(destLat, destLng) {
@@ -897,6 +1118,111 @@
                 closeProfileModal();
             }
         });
+
+        // Add Box Modal Functions
+        const addBoxModal = document.getElementById('addBoxModal');
+
+        function openAddBoxModal() {
+            if (addBoxModal) {
+                addBoxModal.classList.remove('hidden');
+                addBoxModal.classList.add('flex');
+            }
+        }
+
+        function closeAddBoxModal() {
+            if (addBoxModal) {
+                addBoxModal.classList.add('hidden');
+                addBoxModal.classList.remove('flex');
+                document.getElementById('addBoxForm').reset();
+            }
+        }
+
+        // Close Add Box modal when clicking outside
+        addBoxModal?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeAddBoxModal();
+            }
+        });
+
+        // Use current location for new box
+        function useCurrentLocation() {
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error');
+                return;
+            }
+
+            showNotification('Getting location...', 'info');
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    document.getElementById('boxLat').value = position.coords.latitude.toFixed(6);
+                    document.getElementById('boxLng').value = position.coords.longitude.toFixed(6);
+                    showNotification('Location applied!', 'success');
+                },
+                (error) => {
+                    showNotification('Could not get location', 'error');
+                }
+            );
+        }
+
+        async function handleBoxSubmit(event) {
+            event.preventDefault();
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+
+            const formData = {
+                code: document.getElementById('boxCode').value,
+                latitude: document.getElementById('boxLat').value,
+                longitude: document.getElementById('boxLng').value,
+                nameOfConsumer: document.getElementById('boxConsumerName').value || null,
+                numberOfConsumer: document.getElementById('boxConsumerNumber').value || null,
+                status: document.getElementById('boxStatus').value
+            };
+
+            try {
+                const response = await fetch('/api/boxes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Add CSRF token if needed, or if API route is excluded from CSRF
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Success
+                    showNotification('Box added successfully!', 'success');
+                    closeAddBoxModal();
+
+                    // Refresh data
+                    await fetchBoxes();
+
+                    // Center on new box
+                    if (data.latitude && data.longitude) {
+                        map.setView([data.latitude, data.longitude], 18);
+                    }
+                } else {
+                    // Error
+                    const errorMessage = data.message || 'Failed to add box';
+                    showNotification(errorMessage, 'error');
+                    console.error('Server Error:', data);
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                showNotification('Network error occurred', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
+        }
+
+
+
     </script>
 
 </body>

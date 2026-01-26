@@ -6,3 +6,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/boxes', [BoxController::class, 'index']);
 Route::get('/boxes', [BoxController::class, 'index']);
+Route::post('/boxes', [BoxController::class, 'store']);
