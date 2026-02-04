@@ -695,8 +695,10 @@
                         iconAnchor: [15, 15]
                     });
 
-                    const marker = L.marker([box.latitude, box.longitude], { icon })
-                        .bindPopup(createPopupContent(box));
+                    const marker = L.marker([box.latitude, box.longitude], { 
+                        icon, 
+                        id: box.id 
+                    }).bindPopup(createPopupContent(box));
 
                     markers.addLayer(marker);
                 }
@@ -918,7 +920,7 @@
 
                 return `
                 <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                     onclick="centerOnBox(${box.latitude}, ${box.longitude})">
+                     onclick="centerOnBox(${box.id}, ${box.latitude}, ${box.longitude})">
                     <div class="flex items-center justify-between mb-1">
                         <h4 class="font-semibold text-gray-800 truncate">${title}</h4>
                         ${getStatusBadge(box.status)}
@@ -933,65 +935,44 @@
         }
 
         // Center map on specific box
-        function centerOnBox(lat, lng) {
+        function centerOnBox(id, lat, lng) {
             const sidebar = document.querySelector('.sidebar');
             if (window.innerWidth < 1024) {
                 sidebar.classList.add('-translate-x-full');
             }
 
             const targetLatLng = L.latLng(lat, lng);
-
-            // Close any existing popup first
-            map.closePopup();
-
-            // First, find the exact marker and store its reference
             let targetMarker = null;
-            let closestDistance = Infinity;
 
+            // First try to find by ID
             markers.eachLayer(layer => {
-                const pos = layer.getLatLng();
-                const distance = targetLatLng.distanceTo(pos);
-
-                // Find the closest marker within a reasonable distance (10 meters)
-                if (distance < 10 && distance < closestDistance) {
-                    closestDistance = distance;
+                if (layer.options.id == id) {
                     targetMarker = layer;
                 }
             });
 
+            // Fallback: find by proximity if ID lookup failed
             if (!targetMarker) {
-                console.log('No marker found at the given coordinates');
-                return;
+                 let closestDistance = Infinity;
+                 markers.eachLayer(layer => {
+                    const pos = layer.getLatLng();
+                    const distance = targetLatLng.distanceTo(pos);
+                    if (distance < 10 && distance < closestDistance) {
+                        closestDistance = distance;
+                        targetMarker = layer;
+                    }
+                });
             }
 
-            // Store the original popup content
-            const popupContent = targetMarker.getPopup()?.getContent() || createPopupContent(targetMarker.options.boxData);
-
-            // Create a new popup with the same content
-            const popup = L.popup()
-                .setLatLng(targetLatLng)
-                .setContent(popupContent);
-
-            // Fly to the location
-            map.flyTo(targetLatLng, 18, {
-                duration: 1,
-                easeLinearity: 0.25,
-                onEnd: function () {
-                    // Small delay to ensure the map has settled
-                    setTimeout(() => {
-                        // Open the popup directly
-                        popup.openOn(map);
-
-                        // Force a small pan to ensure the popup is fully visible
-                        setTimeout(() => {
-                            map.panBy([0, -50], {
-                                duration: 0.3,
-                                easeLinearity: 0.25
-                            });
-                        }, 100);
-                    }, 100);
-                }
-            });
+            if (targetMarker) {
+                // Use zoomToShowLayer which handles clustering automatically
+                markers.zoomToShowLayer(targetMarker, function () {
+                    targetMarker.openPopup();
+                });
+            } else {
+                 // Final fallback: just fly there if no marker found (shouldn't happen)
+                 map.flyTo(targetLatLng, 18);
+            }
         }
 
 
