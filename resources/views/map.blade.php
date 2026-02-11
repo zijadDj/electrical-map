@@ -309,6 +309,12 @@
             <!-- Profile Section - Made more compact -->
             <div class="p-2 border-t bg-gray-50">
                 @auth
+                    <a href="{{ route('import.form') }}"
+                        class="mb-2 w-full flex items-center justify-center space-x-2 bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition text-sm">
+                        <i class="fas fa-file-import text-green-600"></i>
+                        <span>Import Data</span>
+                    </a>
+
                     <button onclick="openProfileModal()"
                         class="w-full flex items-center justify-center space-x-2 bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition text-sm">
                         <i class="fas fa-user-circle text-blue-600"></i>
@@ -695,9 +701,9 @@
                         iconAnchor: [15, 15]
                     });
 
-                    const marker = L.marker([box.latitude, box.longitude], { 
-                        icon, 
-                        id: box.id 
+                    const marker = L.marker([box.latitude, box.longitude], {
+                        icon,
+                        id: box.id
                     }).bindPopup(createPopupContent(box));
 
                     markers.addLayer(marker);
@@ -953,8 +959,8 @@
 
             // Fallback: find by proximity if ID lookup failed
             if (!targetMarker) {
-                 let closestDistance = Infinity;
-                 markers.eachLayer(layer => {
+                let closestDistance = Infinity;
+                markers.eachLayer(layer => {
                     const pos = layer.getLatLng();
                     const distance = targetLatLng.distanceTo(pos);
                     if (distance < 10 && distance < closestDistance) {
@@ -970,8 +976,8 @@
                     targetMarker.openPopup();
                 });
             } else {
-                 // Final fallback: just fly there if no marker found (shouldn't happen)
-                 map.flyTo(targetLatLng, 18);
+                // Final fallback: just fly there if no marker found (shouldn't happen)
+                map.flyTo(targetLatLng, 18);
             }
         }
 
